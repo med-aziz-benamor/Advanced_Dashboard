@@ -16,8 +16,8 @@ class Settings(BaseSettings):
     TEMP_DIR: Path = Path("/tmp")
     
     # API settings
-    API_HOST: str = "0.0.0.0"
-    API_PORT: int = 8000
+    HOST: str = "0.0.0.0"
+    PORT: int = 8000
     
     # Logging
     LOG_LEVEL: str = "info"
