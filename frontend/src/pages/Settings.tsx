@@ -4,6 +4,35 @@ import { useAuth } from '../auth/AuthContext'
 import { usePollingApi } from '../hooks/usePollingApi'
 import { fetchMode, setMode } from '../api/endpoints'
 
+// Prometheus Status Check Component
+function PrometheusStatus() {
+  const [isReachable, setIsReachable] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    const checkPrometheus = async () => {
+      try {
+        const response = await fetch('/api/mode')
+        const data = await response.json()
+        setIsReachable(data.prometheus_up || false)
+      } catch {
+        setIsReachable(false)
+      }
+    }
+    checkPrometheus()
+    const interval = setInterval(checkPrometheus, 30000) // Check every 30s
+    return () => clearInterval(interval)
+  }, [])
+
+  if (isReachable === null) {
+    return <Badge variant="neutral">Checking...</Badge>
+  }
+  return isReachable ? (
+    <Badge variant="success">Connected</Badge>
+  ) : (
+    <Badge variant="danger">Unreachable</Badge>
+  )
+}
+
 function Settings() {
   const { user, hasRole } = useAuth()
   const { toast } = useToast()
@@ -246,7 +275,7 @@ function Settings() {
                     Current mode: <span className="font-semibold">{modeData?.active_mode || 'unknown'}</span>
                   </p>
                 </div>
-                {modeData?.prometheus_available ? (
+                {modeData?.prometheus_up ? (
                   <Badge variant="success">Prometheus Connected</Badge>
                 ) : (
                   <Badge variant="warning">Demo Mode</Badge>
@@ -339,35 +368,6 @@ function ModeButton({
       setLoading(false)
     }
   }
-// Prometheus Status Check Component
-function PrometheusStatus() {
-  const [isReachable, setIsReachable] = useState<boolean | null>(null)
-
-  useEffect(() => {
-    const checkPrometheus = async () => {
-      try {
-        const response = await fetch('/api/mode')
-        const data = await response.json()
-        setIsReachable(data.prometheus_available || false)
-      } catch {
-        setIsReachable(false)
-      }
-    }
-    checkPrometheus()
-    const interval = setInterval(checkPrometheus, 30000) // Check every 30s
-    return () => clearInterval(interval)
-  }, [])
-
-  if (isReachable === null) {
-    return <Badge variant="neutral">Checking...</Badge>
-  }
-  return isReachable ? (
-    <Badge variant="success">Connected</Badge>
-  ) : (
-    <Badge variant="danger">Unreachable</Badge>
-  )
-}
-
 
   return (
     <button
