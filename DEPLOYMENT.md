@@ -85,7 +85,7 @@ Save and exit (Ctrl+X, then Y, then Enter)
 sudo ufw allow 22/tcp
 
 # Allow application port
-sudo ufw allow 8088/tcp
+sudo ufw allow 8089/tcp
 
 # Allow Prometheus & Grafana (if needed)
 sudo ufw allow 30090/tcp  # Prometheus
